@@ -6,6 +6,13 @@
       </v-card>
     </v-window-item>
   </v-window>
+
+  <v-container class="text-center mt-10">
+    <v-btn color="primary">Vuetify Button</v-btn>
+    <button class="bg-blue-500 text-white font-bold py-2 px-4 rounded mt-4">
+      Tailwind Button
+    </button>
+  </v-container>
 </template>
 <script>
 export default {
@@ -15,3 +22,4 @@ export default {
   }),
 };
 </script>
+
