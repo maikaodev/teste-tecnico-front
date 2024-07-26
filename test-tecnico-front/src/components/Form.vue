@@ -9,6 +9,7 @@
           v-model="email"
           :rules="emailRules"
           label="E-mail"
+          type="email"
         ></v-text-field>
 
         <v-text-field
@@ -138,3 +139,4 @@ export default {
   },
 };
 </script>
+
