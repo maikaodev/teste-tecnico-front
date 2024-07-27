@@ -5,9 +5,11 @@ import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
 import axiosInstance from '../utils/axios';
 
-const router = useRouter();
+import { UserResponse } from '../types';
 
 export const useAuthStore = defineStore('auth', () => {
+  const router = useRouter();
+
   const token = ref<string | undefined>(undefined);
   const username = ref<string | undefined>(
     localStorage.getItem('username') || undefined,
@@ -97,6 +99,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const listOfUsers = async (
+    pageNumber: string = '1',
+  ): Promise<UserResponse | null> => {
+    try {
+      const response = await axiosInstance.get<UserResponse>(
+        `/users?page=${pageNumber}`,
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error('Failed to fetch users:', error.message);
+      return null;
+    }
+  };
+
   const logout = () => {
     token.value = undefined;
     username.value = undefined;
@@ -118,6 +134,7 @@ export const useAuthStore = defineStore('auth', () => {
     register,
     logout,
     isAuthenticated,
+    listOfUsers,
   };
 });
 

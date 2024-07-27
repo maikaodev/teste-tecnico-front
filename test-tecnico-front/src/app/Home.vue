@@ -31,11 +31,11 @@
     </section>
 
     <section>
-      <Card :users="users" />
+      <Card :data="users" />
     </section>
 
     <div>
-      <v-pagination :length="4"></v-pagination>
+      <v-pagination :length="totalPages"></v-pagination>
     </div>
   </main>
 
@@ -62,9 +62,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useRouter } from 'vue-router';
+import { defineComponent, ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
+
+import { User } from '../types';
 
 export default defineComponent({
   name: 'Home',
@@ -74,17 +75,29 @@ export default defineComponent({
   }),
   setup() {
     const authStore = useAuthStore();
-    const router = useRouter();
-
     const username = authStore.username;
+    const users = ref<User[]>([]);
+    const totalPages = ref<number | undefined>(0);
 
     const logout = () => {
       authStore.logout();
     };
 
+    onMounted(async () => {
+      const response = await authStore.listOfUsers('1');
+      totalPages.value = response?.total_pages;
+
+      if (response) {
+        users.value = response.data;
+      }
+    });
+
     return {
-      logout,
       username,
+      users,
+      authStore,
+      totalPages,
+      logout,
     };
   },
 });
