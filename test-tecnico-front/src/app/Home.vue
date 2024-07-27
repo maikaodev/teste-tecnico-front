@@ -11,7 +11,7 @@
         size="60"
       ></v-avatar>
       <v-text class="mx-4 text-lg">Angelo</v-text>
-      <v-btn icon="mdi-logout" variant="text" />
+      <v-btn icon="mdi-logout" variant="text" @click="logout" />
     </div>
   </header>
 
@@ -61,13 +61,30 @@
   </footer>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
+
+export default defineComponent({
   name: 'Home',
   data: () => ({
     show: false,
     icons: ['mdi-facebook', 'mdi-twitter', 'mdi-linkedin', 'mdi-instagram'],
   }),
-};
+  setup() {
+    const authStore = useAuthStore();
+    const router = useRouter();
+
+    const logout = () => {
+      authStore.logout();
+      router.push({ name: 'auth' });
+    };
+
+    return {
+      logout,
+    };
+  },
+});
 </script>
 
