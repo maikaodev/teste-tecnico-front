@@ -79,21 +79,21 @@ export default defineComponent({
         (value: string) => !!value || 'O campo de senha não pode estar vazio',
       ];
 
-      // if (props.settings.title === 'Cadastrar') {
-      //   return [
-      //     ...baseRules,
-      //     (value: string) =>
-      //       value.length >= 8 || 'A senha deve ter pelo menos 8 caracteres',
-      //     (value: string) =>
-      //       /[A-Z]/.test(value) ||
-      //       'A senha deve conter pelo menos uma letra maiúscula',
-      //     (value: string) =>
-      //       /[a-z]/.test(value) ||
-      //       'A senha deve conter pelo menos uma letra minúscula',
-      //     (value: string) =>
-      //       /\d/.test(value) || 'A senha deve conter pelo menos um número',
-      //   ];
-      // }
+      if (props.settings.title === 'Cadastrar') {
+        return [
+          ...baseRules,
+          (value: string) =>
+            value.length >= 8 || 'A senha deve ter pelo menos 8 caracteres',
+          (value: string) =>
+            /[A-Z]/.test(value) ||
+            'A senha deve conter pelo menos uma letra maiúscula',
+          (value: string) =>
+            /[a-z]/.test(value) ||
+            'A senha deve conter pelo menos uma letra minúscula',
+          (value: string) =>
+            /\d/.test(value) || 'A senha deve conter pelo menos um número',
+        ];
+      }
 
       return baseRules;
     });
@@ -136,47 +136,39 @@ export default defineComponent({
         (rule) => rule(email.value) === true,
       );
 
-      const isPasswordValid = password === 'pistol';
-      //  passwordRules.value.every(
-      //   (rule) => rule(password.value) === true,
-      // );
+      const isPasswordValid = passwordRules.value.every(
+        (rule) => rule(password.value) === true,
+      );
 
       const toRegister = props.settings.title === 'Cadastrar';
       const toLogin = props.settings.title === 'Login';
 
       const credentials = isEmailValid && isPasswordValid;
+      let response;
 
       if (toRegister && username && credentials) {
-        const response = await authStore.register({
+        response = await authStore.register({
           name: username.value,
           email: email.value,
           password: password.value,
         });
-
-        if (response.ok) {
-          router.push({ name: 'home' });
-
-          return;
-        }
-        // TODO: Mostrar mensagem toast
-        alert(response.message);
       }
 
       if (toLogin && credentials) {
-        const response = await authStore.login({
+        response = await authStore.login({
           email: email.value,
           password: password.value,
         });
-
-        if (response.ok) {
-          router.push({ name: 'home' });
-
-          return;
-        }
-
-        // TODO: Mostrar mensagem toast
-        alert(response.message);
       }
+
+      if (response.ok) {
+        router.push({ name: 'home' });
+
+        return;
+      }
+
+      // TODO: Mostrar mensagem toast
+      alert(response.message);
     };
 
     return {

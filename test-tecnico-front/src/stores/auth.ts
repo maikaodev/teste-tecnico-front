@@ -6,7 +6,11 @@ import axiosInstance from '../utils/axios';
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | undefined>(undefined);
 
-  const login = async (credentials: { email: string; password: string }) => {
+  const login = async (credentials: {
+    username?: string;
+    email: string;
+    password: string;
+  }) => {
     try {
       const response = await axiosInstance.post<{ token: string }>(
         '/login',
@@ -45,11 +49,13 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await axiosInstance.post('/register', credentials);
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         await login({
           email: credentials.email,
           password: credentials.password,
         });
+
+        return { ok: true };
       }
     } catch (error: any) {
       const errorMessage = error.response.data.error;
