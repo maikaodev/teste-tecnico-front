@@ -4,10 +4,8 @@
   >
     <Form :settings="formConfig" />
 
-    <v-btn color="blue-grey-lighten-1" @click="toggleEvent">
-      <v-icon>{{ iconComputed }}</v-icon>
-
-      <span>{{ textBtnComputed }}</span>
+    <v-btn @click="toggleEvent" elevation="1">
+      {{ textBtnComputed }}
     </v-btn>
   </div>
 </template>
