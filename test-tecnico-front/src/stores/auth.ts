@@ -1,10 +1,17 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 import Cookies from 'js-cookie';
 import axiosInstance from '../utils/axios';
 
+const router = useRouter();
+
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | undefined>(undefined);
+  const username = ref<string | undefined>(
+    localStorage.getItem('username') || undefined,
+  );
 
   const login = async (credentials: {
     username?: string;
@@ -55,6 +62,9 @@ export const useAuthStore = defineStore('auth', () => {
           password: credentials.password,
         });
 
+        username.value = credentials.name;
+        localStorage.setItem('username', username.value);
+
         return { ok: true };
       }
     } catch (error: any) {
@@ -89,8 +99,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => {
     token.value = undefined;
+    username.value = undefined;
 
     Cookies.remove('authToken');
+    router.push({ name: 'auth' });
   };
 
   const isAuthenticated = () => {
@@ -101,6 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     token,
+    username,
     login,
     register,
     logout,

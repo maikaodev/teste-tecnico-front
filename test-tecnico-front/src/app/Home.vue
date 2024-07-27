@@ -10,7 +10,7 @@
         image="https://avatars.githubusercontent.com/u/82960620?v=4"
         size="60"
       ></v-avatar>
-      <v-text class="mx-4 text-lg">Angelo</v-text>
+      <v-text class="mx-4 text-lg">{{ username }}</v-text>
       <v-btn icon="mdi-logout" variant="text" @click="logout" />
     </div>
   </header>
@@ -76,13 +76,15 @@ export default defineComponent({
     const authStore = useAuthStore();
     const router = useRouter();
 
+    const username = authStore.username;
+
     const logout = () => {
       authStore.logout();
-      router.push({ name: 'auth' });
     };
 
     return {
       logout,
+      username,
     };
   },
 });
