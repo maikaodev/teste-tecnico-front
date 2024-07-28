@@ -4,20 +4,19 @@
       class="flex flex-col items-center md:flex-row md:justify-between border-b-2 drop-shadow-md p-4 mb-4 h-1/3 gap-4"
       :elevation="2"
     >
-      <h2 class="text-2xl font-bold">Gerenciamento de funcionários</h2>
-      <router-link
-        class="mr-auto border-2 border-black rounded px-4 py-2 mx-4 font-bold hover:border-none hover:text-white-500 hover:bg-background-secondary"
-        :to="link"
-        >{{ page }}</router-link
-      >
-      <div class="self-end">
-        <v-avatar
-          class="border-2 border-black"
-          image="https://avatars.githubusercontent.com/u/82960620?v=4"
-          size="60"
-        ></v-avatar>
-        <v-text class="mx-4 text-lg">{{ username }}</v-text>
-        <v-btn icon="mdi-logout" variant="text" @click="logout" />
+      <h2 class="text-2xl font-bold">Gerenciador de funcionários</h2>
+      <div class="w-full flex items-center gap-4">
+        <router-link
+          class="mr-auto border-2 border-black rounded px-4 py-2 font-bold hover:border-none hover:text-white-500 hover:bg-background-secondary"
+          :to="page"
+          >{{ page }}</router-link
+        >
+        <div class="flex">
+          <v-text class="flex items-center mx-4 text-md"
+            >Bem-vindo, {{ username }}</v-text
+          >
+          <v-btn icon="mdi-logout" variant="text" @click="logout" />
+        </div>
       </div>
     </header>
 
@@ -80,10 +79,6 @@ export default defineComponent({
       return route.name === 'Home' ? 'Dashboard' : 'Home';
     });
 
-    const link = computed(() => {
-      return route.name === 'Home' ? { name: 'Dashboard' } : { name: 'Home' };
-    });
-
     const logout = () => {
       authStore.logout();
     };
@@ -91,7 +86,6 @@ export default defineComponent({
     return {
       username,
       page,
-      link,
       logout,
     };
   },

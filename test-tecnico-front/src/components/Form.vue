@@ -1,9 +1,12 @@
 <template>
   <div
-    class="d-flex flex-column items-center justify-center bg-slate-300 w-screen gap-y-4"
+    class="w-80 d-flex flex-column items-center justify-center bg-slate-300 gap-y-4"
   >
     <h1 class="text-3xl font-bold">{{ settings.title }}</h1>
-    <v-sheet class="rounded p-2 border border-background-secondary" width="500">
+    <section
+      class="w-full rounded p-2 bg-white border border-background-secondary"
+      width="500"
+    >
       <v-form @submit.prevent="validateForm">
         <v-text-field
           v-show="settings.title === 'Cadastrar'"
@@ -35,14 +38,14 @@
           ></v-list-item>
         </v-list>
 
-        <v-btn
-          class="bg-background-secondary text-font-secondary px-4 py-2"
+        <button
+          class="w-full bg-background-secondary text-font-secondary text-xl px-4 py-2 mt-4 rounded"
           type="submit"
-          block
-          >{{ settings.textBtn }}</v-btn
         >
+          {{ settings.textBtn }}
+        </button>
       </v-form>
-    </v-sheet>
+    </section>
   </div>
 </template>
 
@@ -167,7 +170,7 @@ export default defineComponent({
       }
 
       if (response.ok) {
-        router.push({ name: 'home' });
+        router.push({ name: 'Home' });
 
         return;
       }

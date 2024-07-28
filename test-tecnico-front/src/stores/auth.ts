@@ -132,10 +132,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => {
     token.value = undefined;
-    username.value = undefined;
 
     Cookies.remove('authToken');
-    router.push({ name: 'auth' });
+    router.push({ name: 'Auth' });
   };
 
   const isAuthenticated = () => {

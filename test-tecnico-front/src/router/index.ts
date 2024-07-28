@@ -28,6 +28,10 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Auth',
     component: Auth,
   },
+  {
+    path: '/:pathMatch(.*)*', // Catch-all route
+    redirect: '/auth', // Redirect to auth page
+  },
 ];
 
 const router = createRouter({
@@ -35,18 +39,18 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore();
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!authStore.isAuthenticated()) {
-      next({ name: 'Login' });
-    } else {
-      next();
-    }
-  } else {
-    next();
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const isAuthenticated = authStore.isAuthenticated();
+
+  if (requiresAuth && !isAuthenticated) {
+    next({ name: 'Auth' });
+    return;
   }
+
+  next();
 });
 
 export default router;
