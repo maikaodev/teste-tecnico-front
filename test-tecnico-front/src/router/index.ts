@@ -1,37 +1,52 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-
-import { useAuthStore } from '../stores/auth';
-
-import Auth from '../app/Auth.vue';
 import Home from '../app/Home.vue';
+import Dashboard from '../app/Dashboard.vue';
+import Auth from '../app/Auth.vue';
+import LoggedLayout from '../layouts/LoggedLayout.vue';
+import { useAuthStore } from '../stores/auth';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'auth',
-    component: Auth,
+    component: LoggedLayout,
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: Home,
+      },
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: Dashboard,
+      },
+    ],
+    meta: { requiresAuth: true },
   },
   {
-    path: '/home',
-    name: 'home',
-    component: Home,
-    meta: { requiresAuth: true },
-    props: (route) => ({ page: route.query.page || '1' }),
+    path: '/auth',
+    name: 'Auth',
+    component: Auth,
   },
 ];
 
 const router = createRouter({
-  routes,
   history: createWebHistory(),
+  routes,
 });
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  if (to.meta.requiresAuth && !authStore.isAuthenticated()) {
-    next('/');
-    return;
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!authStore.isAuthenticated()) {
+      next({ name: 'Login' });
+    } else {
+      next();
+    }
+  } else {
+    next();
   }
-  next();
 });
 
 export default router;

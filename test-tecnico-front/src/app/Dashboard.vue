@@ -1,37 +1,5 @@
 <template>
-  <main class="h-screen flex flex-col">
-    <section
-      class="px-4 flex flex-col sm:flex-row items-center justify-between gap-4"
-    >
-      <div class="mx-8 border-2 border-black rounded">
-        <input
-          v-model="searchQuery"
-          @input="filterUsers"
-          class="px-4 py-2 rounded focus:outline-0 w-full"
-          placeholder="Nome do usuário"
-          type="text"
-        />
-      </div>
-
-      <v-btn
-        class="w-1/6"
-        variant="outlined"
-        width="180"
-        @click="createANewUser"
-        >Novo usuário</v-btn
-      >
-    </section>
-
-    <section class="h-screen flex flex-col justify-around">
-      <Card :data="filteredUsers" />
-
-      <v-pagination
-        v-model="currentPage"
-        active-color="#7c8071"
-        :length="totalPages"
-      ></v-pagination>
-    </section>
-  </main>
+  <h1>DASHBOARD</h1>
 </template>
 
 <script lang="ts">
@@ -44,7 +12,7 @@ import Card from '../components/Card.vue';
 import { User } from '../types';
 
 export default defineComponent({
-  name: 'Home',
+  name: 'Dashboard',
   components: { Card },
   props: {
     page: {
@@ -52,9 +20,13 @@ export default defineComponent({
       required: true,
     },
   },
-
+  data: () => ({
+    show: false,
+    icons: ['mdi-facebook', 'mdi-twitter', 'mdi-linkedin', 'mdi-instagram'],
+  }),
   setup(props) {
     const authStore = useAuthStore();
+    const username = authStore.username;
     const users = ref<User[]>([]);
     const filteredUsers = ref<User[]>([]);
     const allUsers = ref<User[]>([]);
@@ -64,74 +36,64 @@ export default defineComponent({
     const route = useRoute();
     const searchQuery = ref<string>('');
 
+    const logout = () => {
+      authStore.logout();
+    };
+
     const createANewUser = () => {
       authStore.createAUser();
     };
 
     const fetchUsers = async (page: string) => {
       const response = await authStore.listOfUsers(page);
-
       if (response) {
         users.value = response.data;
         totalPages.value = response.total_pages;
-      }
-
-      if (response && searchQuery.value.trim() === '') {
-        filteredUsers.value = [...users.value];
+        if (searchQuery.value.trim() === '') {
+          filteredUsers.value = [...users.value];
+        }
       }
     };
 
     const fetchAllUsers = async () => {
       let allUsersTemp: User[] = [];
-
       for (let i = 1; i <= totalPages.value!; i++) {
         const response = await authStore.listOfUsers(i.toString());
-
         if (response) {
           allUsersTemp = allUsersTemp.concat(response.data);
         }
       }
-
       allUsers.value = allUsersTemp;
     };
 
     const filterUsers = () => {
       if (searchQuery.value.trim() === '') {
         filteredUsers.value = [...users.value];
-        return;
+      } else {
+        filteredUsers.value = allUsers.value.filter((user) =>
+          `${user.first_name} ${user.last_name}`
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase()),
+        );
       }
-
-      filteredUsers.value = allUsers.value.filter((user) =>
-        `${user.first_name} ${user.last_name}`
-          .toLowerCase()
-          .includes(searchQuery.value.toLowerCase()),
-      );
     };
 
-    onMounted(() => {
-      const pageParam = route.query.page?.toString();
-
-      if (pageParam) {
-        fetchUsers(pageParam || currentPage.value.toString());
-        fetchAllUsers();
-
-        currentPage.value = Number(pageParam);
-
-        return;
-      }
-      router.push({ query: { ...route.query, page: '1' } });
+    onMounted(async () => {
+      await fetchUsers(currentPage.value.toString());
+      await fetchAllUsers();
     });
 
-    watch(currentPage, (newPage) => {
-      fetchUsers(newPage.toString());
+    watch(currentPage, async (newPage) => {
+      await fetchUsers(newPage.toString());
       router.push({ query: { ...route.query, page: newPage.toString() } });
     });
 
     watch(
       () => route.query.page,
-      (newPage) => {
+      async (newPage) => {
         if (newPage) {
           currentPage.value = parseInt(newPage as string);
+          await fetchUsers(currentPage.value.toString());
         }
       },
     );
@@ -141,6 +103,7 @@ export default defineComponent({
     });
 
     return {
+      username,
       users,
       filteredUsers,
       allUsers,
@@ -148,6 +111,7 @@ export default defineComponent({
       totalPages,
       currentPage,
       searchQuery,
+      logout,
       createANewUser,
       filterUsers,
     };

@@ -1,6 +1,6 @@
 <template>
   <ul
-    class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 mx-auto mt-4 gap-4 bg-green-500"
+    class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 mx-auto mt-4 gap-4 bg-green-500"
   >
     <li
       v-for="user in data"
