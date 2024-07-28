@@ -22,7 +22,9 @@
       >
         <div class="w-full mx-8">
           <input
-            class="w-full border px-4 py-2 rounded focus:outline-0"
+            v-model="searchQuery"
+            @input="filterUsers"
+            class="border px-4 py-2 rounded focus:outline-0"
             placeholder="Nome do usuário"
             type="text"
           />
@@ -32,13 +34,13 @@
           class="w-1/6"
           variant="outlined"
           width="180"
-          @click="creataANewUser"
+          @click="createANewUser"
           >Novo usuário</v-btn
         >
       </section>
 
       <section class="h-screen flex flex-col justify-around">
-        <Card :data="users" />
+        <Card :data="filteredUsers" />
 
         <v-pagination v-model="currentPage" :length="totalPages"></v-pagination>
       </section>
@@ -93,64 +95,92 @@ export default defineComponent({
     const authStore = useAuthStore();
     const username = authStore.username;
     const users = ref<User[]>([]);
+    const filteredUsers = ref<User[]>([]);
+    const allUsers = ref<User[]>([]);
     const totalPages = ref<number | undefined>(0);
     const currentPage = ref<number>(parseInt(props.page));
     const router = useRouter();
     const route = useRoute();
+    const searchQuery = ref<string>('');
 
     const logout = () => {
       authStore.logout();
     };
 
-    const creataANewUser = () => {
+    const createANewUser = () => {
       authStore.createAUser();
     };
 
-    onMounted(async () => {
-      const response = await authStore.listOfUsers('1');
-      totalPages.value = response?.total_pages;
-
-      if (response) {
-        users.value = response.data;
-      }
-    });
-
     const fetchUsers = async (page: string) => {
       const response = await authStore.listOfUsers(page);
-      totalPages.value = response?.total_pages;
-
       if (response) {
         users.value = response.data;
+        totalPages.value = response.total_pages;
+        if (searchQuery.value.trim() === '') {
+          filteredUsers.value = [...users.value];
+        }
       }
     };
 
-    onMounted(() => {
-      fetchUsers(currentPage.value.toString());
+    const fetchAllUsers = async () => {
+      let allUsersTemp: User[] = [];
+      for (let i = 1; i <= totalPages.value!; i++) {
+        const response = await authStore.listOfUsers(i.toString());
+        if (response) {
+          allUsersTemp = allUsersTemp.concat(response.data);
+        }
+      }
+      allUsers.value = allUsersTemp;
+    };
+
+    const filterUsers = () => {
+      if (searchQuery.value.trim() === '') {
+        filteredUsers.value = [...users.value];
+      } else {
+        filteredUsers.value = allUsers.value.filter((user) =>
+          `${user.first_name} ${user.last_name}`
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase()),
+        );
+      }
+    };
+
+    onMounted(async () => {
+      await fetchUsers(currentPage.value.toString());
+      await fetchAllUsers();
     });
 
     watch(currentPage, async (newPage) => {
-      fetchUsers(newPage.toString());
+      await fetchUsers(newPage.toString());
       router.push({ query: { ...route.query, page: newPage.toString() } });
     });
 
     watch(
       () => route.query.page,
-      (newPage) => {
+      async (newPage) => {
         if (newPage) {
           currentPage.value = parseInt(newPage as string);
-          fetchUsers(currentPage.value.toString());
+          await fetchUsers(currentPage.value.toString());
         }
       },
     );
 
+    watch(users, () => {
+      filterUsers();
+    });
+
     return {
       username,
       users,
+      filteredUsers,
+      allUsers,
       authStore,
       totalPages,
       currentPage,
+      searchQuery,
       logout,
-      creataANewUser,
+      createANewUser,
+      filterUsers,
     };
   },
 });
