@@ -1,29 +1,5 @@
 <template>
   <div>
-    <!-- Filtros -->
-    <div class="filters">
-      <select v-model="selectedYear" @change="applyFilters">
-        <option value="">Todos os Anos</option>
-        <option v-for="year in uniqueYears" :key="year" :value="year">
-          {{ year }}
-        </option>
-      </select>
-      <input
-        type="text"
-        v-model="nameFilter"
-        @input="applyFilters"
-        placeholder="Filtrar por nome"
-      />
-    </div>
-
-    <!-- Gráfico de Usuários -->
-    <apexchart
-      type="bar"
-      height="350"
-      :options="chartOptions"
-      :series="chartData"
-    ></apexchart>
-
     <!-- Gráfico de Gênero por Nome -->
     <apexchart
       type="pie"
@@ -38,9 +14,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import axios from 'axios';
-
 import VueApexCharts from 'vue3-apexcharts';
 import RevenueChart from '../components/Revenue.vue';
 
@@ -58,23 +33,6 @@ export default defineComponent({
       color: string;
     }
 
-    const chartData = ref<{ name: string; data: number[] }[]>([
-      { name: 'Usuários', data: [] },
-    ]);
-    const chartOptions = ref({
-      chart: {
-        type: 'bar',
-        height: 350,
-      },
-      xaxis: {
-        categories: [] as string[],
-      },
-      title: {
-        text: 'Dados dos Usuários',
-        align: 'center',
-      },
-    });
-
     const genderChartData = ref<number[]>([]);
     const genderChartOptions = ref({
       chart: {
@@ -88,11 +46,6 @@ export default defineComponent({
       },
     });
 
-    const allData = ref<User[]>([]);
-    const selectedYear = ref<string>('');
-    const nameFilter = ref<string>('');
-    const uniqueYears = ref<number[]>([]);
-
     const fetchData = async () => {
       try {
         const response1 = await axios.get(
@@ -101,38 +54,12 @@ export default defineComponent({
         const response2 = await axios.get(
           'https://reqres.in/api/unknown?page=2',
         );
-        allData.value = [...response1.data.data, ...response2.data.data];
+        const allData = [...response1.data.data, ...response2.data.data];
 
-        uniqueYears.value = Array.from(
-          new Set(allData.value.map((item) => item.year)),
-        );
-
-        applyFilters();
         await applyGenderChart();
       } catch (error) {
         console.error('Error fetching data', error);
       }
-    };
-
-    const applyFilters = () => {
-      let filteredData = allData.value;
-
-      if (selectedYear.value) {
-        filteredData = filteredData.filter(
-          (item) => item.year.toString() === selectedYear.value,
-        );
-      }
-
-      if (nameFilter.value) {
-        filteredData = filteredData.filter((item) =>
-          item.name.toLowerCase().includes(nameFilter.value.toLowerCase()),
-        );
-      }
-
-      chartData.value[0].data = filteredData.map((item) => item.year);
-      chartOptions.value.xaxis.categories = filteredData.map(
-        (item) => item.name,
-      );
     };
 
     const applyGenderChart = async () => {
@@ -178,28 +105,15 @@ export default defineComponent({
       fetchData();
     });
 
-    watch(selectedYear, applyFilters);
-    watch(nameFilter, applyFilters);
-
     return {
-      chartData,
-      chartOptions,
       genderChartData,
       genderChartOptions,
-      selectedYear,
-      nameFilter,
-      uniqueYears,
-      applyFilters,
     };
   },
 });
 </script>
 
 <style>
-.filters {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+/* Removido estilo dos filtros */
 </style>
 
