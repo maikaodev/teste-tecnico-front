@@ -5,6 +5,11 @@
       :elevation="2"
     >
       <h2 class="text-2xl font-bold">Gerenciamento de funcionários</h2>
+      <router-link
+        class="mr-auto border-2 border-black rounded px-4 py-2 mx-4 font-bold hover:border-none hover:text-white-500 hover:bg-background-secondary"
+        :to="link"
+        >{{ page }}</router-link
+      >
       <div class="self-end">
         <v-avatar
           class="border-2 border-black"
@@ -44,8 +49,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-
+import { defineComponent, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
 export default defineComponent({
@@ -67,8 +72,17 @@ export default defineComponent({
   }),
   setup() {
     const authStore = useAuthStore();
+    const route = useRoute();
 
     const username = authStore.username;
+
+    const page = computed(() => {
+      return route.name === 'Home' ? 'Dashboard' : 'Home';
+    });
+
+    const link = computed(() => {
+      return route.name === 'Home' ? { name: 'Dashboard' } : { name: 'Home' };
+    });
 
     const logout = () => {
       authStore.logout();
@@ -76,9 +90,15 @@ export default defineComponent({
 
     return {
       username,
+      page,
+      link,
       logout,
     };
   },
 });
 </script>
+
+<style scoped>
+/* Estilos específicos do componente */
+</style>
 

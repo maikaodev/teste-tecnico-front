@@ -5,7 +5,7 @@
     <li
       v-for="user in data"
       :key="user.id"
-      class="bg-random-primary cursor-pointer md:w-80 animate-slide-in-elliptic-left-fwd"
+      class="cursor-pointer md:w-80 animate-slide-in-elliptic-left-fwd"
     >
       <div class="w-full h-50">
         <img
@@ -16,15 +16,15 @@
       </div>
 
       <div
-        class="w-full flex flex-col items-center py-2 border rounded-b-lg shadow-xl shadow-black"
+        class="bg-background-secondary w-full flex flex-col items-center py-2 border rounded-b-lg shadow-xl shadow-black"
       >
         <span
-          class="text-xl font-bold text-font-primary px-1 self-start md:self-center"
+          class="text-xl font-bold text-font-secondary px-1 self-start md:self-center"
         >
           {{ user.first_name }} {{ user.last_name }}
         </span>
 
-        <span class="pt-4 text-font-primary text-sm font-light md:text-lg md">
+        <span class="pt-4 text-font-secondary text-sm font-light md:text-lg md">
           {{ user.email }}
         </span>
       </div>

@@ -3,7 +3,7 @@
     class="d-flex flex-column items-center justify-center bg-slate-300 w-screen gap-y-4"
   >
     <h1 class="text-3xl font-bold">{{ settings.title }}</h1>
-    <v-sheet class="rounded p-2" width="500">
+    <v-sheet class="rounded p-2 border border-background-secondary" width="500">
       <v-form @submit.prevent="validateForm">
         <v-text-field
           v-show="settings.title === 'Cadastrar'"
@@ -35,7 +35,12 @@
           ></v-list-item>
         </v-list>
 
-        <v-btn class="mt-2" type="submit" block>{{ settings.textBtn }}</v-btn>
+        <v-btn
+          class="bg-background-secondary text-font-secondary px-4 py-2"
+          type="submit"
+          block
+          >{{ settings.textBtn }}</v-btn
+        >
       </v-form>
     </v-sheet>
   </div>

@@ -8,11 +8,12 @@ export default {
   ],
   theme: {
     colors: {
-      'background-primary': '##dde3ca',
-      'background-secondary': '#7c8071',
-      'background-button-primary': '#487aa1',
-      'font-primary': '#3d3c3b',
-      'font-secondary': '#b2d9f7',
+      'background-primary': '#f4f4dd',
+      'background-secondary': '#801245',
+      'font-primary': '#801245',
+      'font-secondary': '#f4f4dd',
+      'border-primary': '#801245',
+      'border-secondary': '#f4f4dd',
     },
     extend: {
       keyframes: {

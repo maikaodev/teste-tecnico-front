@@ -4,9 +4,13 @@
   >
     <Form :settings="formConfig" />
 
-    <v-btn @click="toggleEvent" elevation="1">
+    <button
+      type="button"
+      class="bg-background-primary text-font-primary px-4 py-2"
+      @click="toggleEvent"
+    >
       {{ textBtnComputed }}
-    </v-btn>
+    </button>
   </div>
 </template>
 
