@@ -38,9 +38,7 @@
 import { defineComponent, ref, onMounted, watch } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter, useRoute } from 'vue-router';
-
 import Card from '../components/Card.vue';
-
 import { User } from '../types';
 
 export default defineComponent({
@@ -52,7 +50,6 @@ export default defineComponent({
       required: true,
     },
   },
-
   setup(props) {
     const authStore = useAuthStore();
     const users = ref<User[]>([]);
@@ -68,7 +65,7 @@ export default defineComponent({
       authStore.createAUser();
     };
 
-    const fetchUsers = async (page: string) => {
+    const fetchUsers = async (page?: string) => {
       const response = await authStore.listOfUsers(page);
 
       if (response) {
@@ -83,16 +80,16 @@ export default defineComponent({
 
     const fetchAllUsers = async () => {
       let allUsersTemp: User[] = [];
-
       for (let i = 1; i <= totalPages.value!; i++) {
         const response = await authStore.listOfUsers(i.toString());
-
         if (response) {
           allUsersTemp = allUsersTemp.concat(response.data);
         }
       }
 
       allUsers.value = allUsersTemp;
+
+      filterUsers();
     };
 
     const filterUsers = () => {
@@ -100,7 +97,6 @@ export default defineComponent({
         filteredUsers.value = [...users.value];
         return;
       }
-
       filteredUsers.value = allUsers.value.filter((user) =>
         `${user.first_name} ${user.last_name}`
           .toLowerCase()
@@ -108,22 +104,34 @@ export default defineComponent({
       );
     };
 
-    onMounted(() => {
-      const pageParam = route.query.page?.toString();
+    onMounted(async () => {
+      let pageParam = route.query.page?.toString();
+
+      await fetchUsers();
+
+      if (isNaN(Number(pageParam))) {
+        pageParam = '1';
+      }
+
+      if (Number(pageParam) > totalPages.value!) {
+        pageParam = '1';
+      }
 
       if (pageParam) {
-        fetchUsers(pageParam || currentPage.value.toString());
-        fetchAllUsers();
+        await fetchUsers(pageParam || currentPage.value.toString());
+        await fetchAllUsers();
 
         currentPage.value = Number(pageParam);
 
         return;
       }
+
       router.push({ query: { ...route.query, page: '1' } });
     });
 
-    watch(currentPage, (newPage) => {
-      fetchUsers(newPage.toString());
+    watch(currentPage, async (newPage) => {
+      await fetchUsers(newPage.toString());
+
       router.push({ query: { ...route.query, page: newPage.toString() } });
     });
 
@@ -136,9 +144,7 @@ export default defineComponent({
       },
     );
 
-    watch(users, () => {
-      filterUsers();
-    });
+    watch(searchQuery, filterUsers);
 
     return {
       users,
