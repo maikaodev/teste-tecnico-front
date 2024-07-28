@@ -13,7 +13,7 @@ Desenvolver uma API para fazer a criação de usuário e login, a listagem e out
 
 ### MVP
 
-- [ ] Pegar o nome do usuário e salvar em localStorage
+- [x] Pegar o nome do usuário e salvar em localStorage
 - [ ] Listar os usuários da API
 - [ ] Permitir criar usuários via MODAL
 - [ ] Permitir filtrar usuários via INPUT
@@ -24,3 +24,4 @@ Desenvolver uma API para fazer a criação de usuário e login, a listagem e out
 - [ ] Sistema de login através de username para salvar as informações do usuário por perfil
 - [ ] Alterar informações do perfil
 - [ ] Salvar a lista de usuário conforme ele cria ou deleta para filtrar o proximo login
+

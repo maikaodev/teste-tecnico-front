@@ -113,6 +113,23 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const createAUser = async () => {
+    const data = {
+      name: 'Angelo Danrley',
+      job: 'Developer',
+    };
+
+    try {
+      await axiosInstance.post('/users', data);
+      console.log('sucesso');
+    } catch (error) {
+      console.log(error);
+    }
+    const response = await axiosInstance.get('users?page=2');
+
+    console.log(response);
+  };
+
   const logout = () => {
     token.value = undefined;
     username.value = undefined;
@@ -135,6 +152,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     isAuthenticated,
     listOfUsers,
+    createAUser,
   };
 });
 
