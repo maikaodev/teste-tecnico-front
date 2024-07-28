@@ -40,7 +40,7 @@
       <section class="h-screen flex flex-col justify-around">
         <Card :data="users" />
 
-        <v-pagination :length="totalPages"></v-pagination>
+        <v-pagination v-model="currentPage" :length="totalPages"></v-pagination>
       </section>
     </main>
 
@@ -68,7 +68,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, watch } from 'vue';
 import { useAuthStore } from '../stores/auth';
 
 import Card from '../components/Card.vue';
@@ -87,6 +87,7 @@ export default defineComponent({
     const username = authStore.username;
     const users = ref<User[]>([]);
     const totalPages = ref<number | undefined>(0);
+    const currentPage = ref<number>(1);
 
     const logout = () => {
       authStore.logout();
@@ -105,11 +106,21 @@ export default defineComponent({
       }
     });
 
+    watch(currentPage, async (newPage) => {
+      const response = await authStore.listOfUsers(newPage.toString());
+      totalPages.value = response?.total_pages;
+
+      if (response) {
+        users.value = response.data;
+      }
+    });
+
     return {
       username,
       users,
       authStore,
       totalPages,
+      currentPage,
       logout,
       creataANewUser,
     };
