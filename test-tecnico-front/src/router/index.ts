@@ -16,6 +16,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'home',
     component: Home,
     meta: { requiresAuth: true },
+    props: (route) => ({ page: route.query.page || '1' }),
   },
 ];
 

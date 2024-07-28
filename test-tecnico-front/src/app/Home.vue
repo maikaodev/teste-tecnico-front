@@ -70,6 +70,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from 'vue';
 import { useAuthStore } from '../stores/auth';
+import { useRouter, useRoute } from 'vue-router';
 
 import Card from '../components/Card.vue';
 
@@ -78,16 +79,24 @@ import { User } from '../types';
 export default defineComponent({
   name: 'Home',
   components: { Card },
+  props: {
+    page: {
+      type: String,
+      required: true,
+    },
+  },
   data: () => ({
     show: false,
     icons: ['mdi-facebook', 'mdi-twitter', 'mdi-linkedin', 'mdi-instagram'],
   }),
-  setup() {
+  setup(props) {
     const authStore = useAuthStore();
     const username = authStore.username;
     const users = ref<User[]>([]);
     const totalPages = ref<number | undefined>(0);
-    const currentPage = ref<number>(1);
+    const currentPage = ref<number>(parseInt(props.page));
+    const router = useRouter();
+    const route = useRoute();
 
     const logout = () => {
       authStore.logout();
@@ -106,14 +115,33 @@ export default defineComponent({
       }
     });
 
-    watch(currentPage, async (newPage) => {
-      const response = await authStore.listOfUsers(newPage.toString());
+    const fetchUsers = async (page: string) => {
+      const response = await authStore.listOfUsers(page);
       totalPages.value = response?.total_pages;
 
       if (response) {
         users.value = response.data;
       }
+    };
+
+    onMounted(() => {
+      fetchUsers(currentPage.value.toString());
     });
+
+    watch(currentPage, async (newPage) => {
+      fetchUsers(newPage.toString());
+      router.push({ query: { ...route.query, page: newPage.toString() } });
+    });
+
+    watch(
+      () => route.query.page,
+      (newPage) => {
+        if (newPage) {
+          currentPage.value = parseInt(newPage as string);
+          fetchUsers(currentPage.value.toString());
+        }
+      },
+    );
 
     return {
       username,
