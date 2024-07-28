@@ -14,3 +14,8 @@ export interface UserResponse {
   total_pages: number;
 }
 
+export interface ChartSeries {
+  name: string;
+  data: number[];
+}
+
