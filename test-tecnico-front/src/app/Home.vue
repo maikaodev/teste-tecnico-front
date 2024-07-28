@@ -1,7 +1,7 @@
 <template>
-  <main class="h-screen flex flex-col">
+  <div class="bg-white flex flex-col">
     <section
-      class="px-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+      class="px-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-4"
     >
       <div class="mx-8 border-2 border-black rounded">
         <input
@@ -22,7 +22,7 @@
       >
     </section>
 
-    <section class="h-screen flex flex-col justify-around">
+    <section class="bg-white mb-4">
       <Card :data="filteredUsers" />
 
       <v-pagination
@@ -31,7 +31,7 @@
         :length="totalPages"
       ></v-pagination>
     </section>
-  </main>
+  </div>
 </template>
 
 <script lang="ts">

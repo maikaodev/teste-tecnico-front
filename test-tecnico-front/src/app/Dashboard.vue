@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <!-- Gráfico de Gênero por Nome -->
+  <div class="bg-white py-4">
     <apexchart
       type="pie"
       height="350"
@@ -8,7 +7,6 @@
       :series="genderChartData"
     ></apexchart>
 
-    <!-- Gráfico de Valores Pantone -->
     <RevenueChart />
   </div>
 </template>
@@ -26,13 +24,6 @@ export default defineComponent({
     RevenueChart,
   },
   setup() {
-    interface User {
-      id: number;
-      name: string;
-      year: number;
-      color: string;
-    }
-
     const genderChartData = ref<number[]>([]);
     const genderChartOptions = ref({
       chart: {
@@ -114,6 +105,8 @@ export default defineComponent({
 </script>
 
 <style>
-/* Removido estilo dos filtros */
+.apexcharts-title-text {
+  font-size: 1.25rem;
+}
 </style>
 

@@ -1,50 +1,47 @@
 <template>
-  <div class="flex flex-col justify-between">
-    <header
-      class="flex flex-col items-center md:flex-row md:justify-between border-b-2 drop-shadow-md p-4 mb-4 h-1/3 gap-4"
-      :elevation="2"
-    >
-      <h2 class="text-2xl font-bold">Gerenciador de funcionários</h2>
-      <div class="w-full flex items-center gap-4">
-        <router-link
-          class="mr-auto border-2 border-black rounded px-4 py-2 font-bold hover:border-none hover:text-white-500 hover:bg-background-secondary"
-          :to="page"
-          >{{ page }}</router-link
-        >
-        <div class="flex">
-          <v-text class="flex items-center mx-4 text-md"
-            >Bem-vindo, {{ username }}</v-text
-          >
-          <v-btn icon="mdi-logout" variant="text" @click="logout" />
-        </div>
-      </div>
-    </header>
-
-    <router-view />
-
-    <footer
-      class="bg-slate-300 flex flex-col items-center mt-4 border-t border-slate-400"
-    >
-      <nav
-        class="flex items-center justify-center w-screen px-4 pt-4 border-slate-400"
+  <header
+    class="flex flex-col items-center md:flex-row md:justify-between border-b-2 drop-shadow-md p-4 gap-4"
+  >
+    <h2 class="text-2xl font-bold">Gerenciador de funcionários</h2>
+    <div class="w-full flex items-center gap-4">
+      <router-link
+        class="mr-auto border-2 border-black rounded px-4 py-2 font-bold"
+        :to="link"
+        >{{ page }}</router-link
       >
-        <a
-          v-for="(icon, index) in icons"
-          :key="index"
-          class="mx-4"
-          size="small"
-          variant="plain"
-          :href="icon.url"
-          target="_blank"
+      <div class="flex">
+        <v-text class="flex items-center mx-4 text-md md:text-xl"
+          >Bem-vindo, {{ username }}</v-text
         >
-          <v-icon :color="icon.color">{{ icon.name }}</v-icon>
-        </a>
-      </nav>
-      <div class="px-4 py-2 text-center w-100">
-        Developed by <strong>maikaodev</strong>
+        <v-btn icon="mdi-logout" variant="text" @click="logout" />
       </div>
-    </footer>
-  </div>
+    </div>
+  </header>
+
+  <main>
+    <router-view />
+  </main>
+
+  <footer class="bg-slate-300 border-t border-slate-400">
+    <nav
+      class="flex items-center justify-center w-screen px-4 pt-4 border-slate-400"
+    >
+      <a
+        v-for="(icon, index) in icons"
+        :key="index"
+        class="mx-4"
+        size="small"
+        variant="plain"
+        :href="icon.url"
+        target="_blank"
+      >
+        <v-icon :color="icon.color">{{ icon.name }}</v-icon>
+      </a>
+    </nav>
+    <div class="px-4 py-2 text-center w-100">
+      Developed by <strong>maikaodev</strong>
+    </div>
+  </footer>
 </template>
 
 <script lang="ts">
@@ -79,6 +76,10 @@ export default defineComponent({
       return route.name === 'Home' ? 'Dashboard' : 'Home';
     });
 
+    const link = computed(() => {
+      return route.name === 'Home' ? { name: 'Dashboard' } : { name: 'Home' };
+    });
+
     const logout = () => {
       authStore.logout();
     };
@@ -86,13 +87,10 @@ export default defineComponent({
     return {
       username,
       page,
+      link,
       logout,
     };
   },
 });
 </script>
-
-<style scoped>
-/* Estilos específicos do componente */
-</style>
 

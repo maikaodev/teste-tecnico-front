@@ -29,8 +29,8 @@ const routes: Array<RouteRecordRaw> = [
     component: Auth,
   },
   {
-    path: '/:pathMatch(.*)*', // Catch-all route
-    redirect: '/auth', // Redirect to auth page
+    path: '/:pathMatch(.*)*',
+    redirect: '/auth',
   },
 ];
 
