@@ -19,3 +19,15 @@ export interface ChartSeries {
   data: number[];
 }
 
+export interface Color {
+  id: number;
+  name: string;
+  year: number;
+  color: string;
+  pantone_value: string;
+}
+
+export interface ColorResponse {
+  data: Color[];
+}
+

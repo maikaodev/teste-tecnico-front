@@ -33,24 +33,22 @@
     ></apexchart>
 
     <!-- Gráfico de Valores Pantone -->
-    <apexchart
-      type="bar"
-      height="350"
-      :options="pantoneChartOptions"
-      :series="pantoneChartData"
-    ></apexchart>
+    <RevenueChart />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from 'vue';
 import axios from 'axios';
+
 import VueApexCharts from 'vue3-apexcharts';
+import RevenueChart from '../components/Revenue.vue';
 
 export default defineComponent({
   name: 'Dashboard',
   components: {
     apexchart: VueApexCharts,
+    RevenueChart,
   },
   setup() {
     interface User {
@@ -58,12 +56,6 @@ export default defineComponent({
       name: string;
       year: number;
       color: string;
-      pantone_value: string;
-    }
-
-    interface GenderData {
-      name: string;
-      gender: string;
     }
 
     const chartData = ref<{ name: string; data: number[] }[]>([
@@ -96,23 +88,6 @@ export default defineComponent({
       },
     });
 
-    const pantoneChartData = ref<{ name: string; data: number[] }[]>([
-      { name: 'Valores Pantone', data: [] },
-    ]);
-    const pantoneChartOptions = ref({
-      chart: {
-        type: 'bar',
-        height: 350,
-      },
-      xaxis: {
-        categories: [] as string[],
-      },
-      title: {
-        text: 'Valores Pantone',
-        align: 'center',
-      },
-    });
-
     const allData = ref<User[]>([]);
     const selectedYear = ref<string>('');
     const nameFilter = ref<string>('');
@@ -134,7 +109,6 @@ export default defineComponent({
 
         applyFilters();
         await applyGenderChart();
-        applyPantoneChart();
       } catch (error) {
         console.error('Error fetching data', error);
       }
@@ -200,15 +174,6 @@ export default defineComponent({
       }
     };
 
-    const applyPantoneChart = () => {
-      pantoneChartData.value[0].data = allData.value.map((item) =>
-        parseInt(item.pantone_value.split('-')[0]),
-      );
-      pantoneChartOptions.value.xaxis.categories = allData.value.map(
-        (item) => item.name,
-      );
-    };
-
     onMounted(() => {
       fetchData();
     });
@@ -221,8 +186,6 @@ export default defineComponent({
       chartOptions,
       genderChartData,
       genderChartOptions,
-      pantoneChartData,
-      pantoneChartOptions,
       selectedYear,
       nameFilter,
       uniqueYears,

@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
 import axiosInstance from '../utils/axios';
 
-import { UserResponse } from '../types';
+import { ColorResponse, UserResponse } from '../types';
 
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter();
@@ -144,6 +144,20 @@ export const useAuthStore = defineStore('auth', () => {
     return !!token.value;
   };
 
+  const listOfColors = async (
+    pageNumber: string = '1',
+  ): Promise<ColorResponse | null> => {
+    try {
+      const response = await axiosInstance.get<ColorResponse>(
+        `/colors?page=${pageNumber}`,
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error('Failed to fetch colors:', error.message);
+      return null;
+    }
+  };
+
   return {
     token,
     username,
@@ -152,6 +166,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     isAuthenticated,
     listOfUsers,
+    listOfColors,
     createAUser,
   };
 });
