@@ -8,12 +8,13 @@ export default {
   ],
   theme: {
     colors: {
-      'background-primary': '#f4f4dd',
-      'background-secondary': '#801245',
-      'font-primary': '#801245',
-      'font-secondary': '#f4f4dd',
-      'border-primary': '#801245',
-      'border-secondary': '#f4f4dd',
+      'back-primary': 'rgb(241,231,213)',
+      'back-secondary': 'rgb(144,119,97)',
+      'button-primary': 'rgb(162,95,82)',
+      'font-primary': 'rgb(89,73,64)',
+      'font-secondary': 'rgb(241,231,213)',
+      'border-primary': 'rgb(144,119,97)',
+      'border-secondary': 'rgb(241,231,213)',
     },
     extend: {
       keyframes: {

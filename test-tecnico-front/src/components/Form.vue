@@ -39,7 +39,7 @@
         </v-list>
 
         <button
-          class="w-full bg-background-secondary text-font-secondary text-xl px-4 py-2 mt-4 rounded"
+          class="w-full bg-back-secondary text-font-secondary text-xl px-4 py-2 mt-4 rounded"
           type="submit"
         >
           {{ settings.textBtn }}
