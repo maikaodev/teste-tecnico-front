@@ -1,60 +1,27 @@
-# Teste técnico para desenvolvedor(a) frond-end (Vue js)
+## Credências válidas
 
-## Instruções do teste
+email: eve.holt@reqres.in
+Nome de usuário e senha podem ser genéricos
 
-Você deverá criar um `fork` deste projeto, e desenvolver em cima do seu fork. Utilize o README principal do seu repositório para descrever como foi resolver o teste, as decisões que você tomou, como organizou e estruturou seu código, e, especialmente, para fornecer as instruções de execução do projeto. Lembre-se de que o primeiro a rodar seu projeto será um programador backend da nossa equipe. Se você conseguir explicar claramente para ele como fazer isso, já estará começando com o pé direito!
+Se tentar rodar o projeto com outro e-mail um toast com mensagem de erro vai aparecer na tela
 
-Acreditamos que este desafio pode ser resolvido em cerca de 40 horas de codificação (5 dias corridos).
+## Melhorias futuras para esse projeto
 
-## O desafio
+Desenvolver uma API para fazer a criação de usuário e login, a listagem e outras funcionalidades poderiam ser reaproveitadas da API https://reqres.in/
 
-Você irá construir uma mini-aplicação para controle de usuários. A aplicação deverá permitir a criação, edição, exclusão e busca de usuários. Além disso, esperamos que você torne o CRUD mais robusto, contendo:
-- Autenticação
-- Validação nos formulários
-- Paginação
-- Filtro de busca
+## Feature:
 
-Utilize a api **https://reqres.in/** para consumir os endpoints necessários.
+### MVP
 
-Por fim, precisamos apresentar essas informações de forma intuitiva e dinâmica para o usuário. Esperamos que você desenvolva um dashboard contendo alguns indicadores e gráficos (fique livre para escolher as informações que serão usadas no dash)
+- [x] Pegar o nome do usuário e salvar em localStorage
+- [ ] Listar os usuários da API
+- [ ] Permitir criar usuários via MODAL
+- [ ] Permitir filtrar usuários via INPUT
+- [ ] Dashboard
 
-#### Observações
-- É interessante o código ter tratamento de erros e feedbacks visuais para o usuário.
-- Para os gráficos recomendamos que utilize o apex charts, porém sinta-se livre para usar outra lib de sua escolha
+### Upgrades
 
-## O que nós esperamos do seu teste
-- Ver na solução a utilização do Vue Js na versão 3
-- Ver a utilização de dependency managers (npm, webpack)
-- Um HTML escrito da maneira mais semântica possível (HTML5/5.1)
-- Um código bem escrito (Modularização, Nomenclaturas, Padronização, Reutilização, etc)
-- Mobile first e layout responsivo
-- Testes unitários
+- [ ] Sistema de login através de username para salvar as informações do usuário por perfil
+- [ ] Alterar informações do perfil
+- [ ] Salvar a lista de usuário conforme ele cria ou deleta para filtrar o proximo login
 
-### O que nos impressionaria
-- Alguma metodologia para definição e organização do seu código CSS/Tailwind
-- Testes de aceitação
-- Aplicação de animações em css quando possível e tome cuidado com a performance
-- Ver o código rodando live (Heroku, Firebase Hosting, Bucket estático S3, etc )
-
-### O que nós não gostaríamos
-
-- Descobrir que não foi você quem fez seu teste
-- Ver commits grandes, sem muita explicação nas mensagens
-- Não conseguir rodar o projeto localmente (lembre-se de detalhar o passo-a-passo para a configuração do mesmo)
-
-## O que avaliaremos de seu teste
-
-- Histórico de commits do git
-- As instruções de como rodar o projeto
-- Organização, semântica, estrutura, legibilidade, manutenibilidade do seu código
-- Alcance dos objetivos propostos
-- Adaptação mobile (layout responsivo)
-- Componentização e extensibilidade dos componentes Javascript
-
-## Processo de submissão
-
-Ao finalizar, responda o email que lhe foi enviado contendo o link do seu repositório
-
-Qualquer dúvida em relação ao desafio, responderemos por e-mail.
-
-Bom trabalho!
