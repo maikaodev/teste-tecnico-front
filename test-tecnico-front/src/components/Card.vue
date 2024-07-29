@@ -19,13 +19,13 @@
         class="bg-back-secondary w-full flex flex-col items-center py-2 border rounded-b-lg shadow-xl shadow-black"
       >
         <span
-          class="text-lg font-bold text-font-secondary px-1 self-start self-center md:text-2xl"
+          class="text-lg font-bold text-font-secondary px-1 self-start self-center md:text-2xl truncate text-ellipsis overflow-hidden"
         >
-          {{ user.first_name }} {{ user.last_name }}
+          {{ truncatedName(user.first_name, user.last_name) }}
         </span>
 
         <span class="pt-4 text-font-secondary text-sm md:text-xl">
-          {{ user.email }}
+          {{ truncatedEmail(user.email) }}
         </span>
       </div>
     </li>
@@ -43,6 +43,17 @@ export default defineComponent({
       type: Array as PropType<User[]>,
       required: true,
       default: () => [],
+    },
+  },
+  methods: {
+    truncatedName(firstName: string, lastName: string): string {
+      const fullName = `${firstName} ${lastName}`;
+      return fullName.length > 26
+        ? fullName.substring(0, 20) + '...'
+        : fullName;
+    },
+    truncatedEmail(email: string): string {
+      return email.length > 25 ? email.substring(0, 25) + '...' : email;
     },
   },
 });
