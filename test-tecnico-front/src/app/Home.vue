@@ -13,7 +13,6 @@
                   class=""
                   variant="outlined"
                   width="180"
-                  @click="createANewUser"
                   >Novo usuário</v-btn
                 >
               </template>
@@ -153,7 +152,7 @@ export default defineComponent({
     const searchQuery = ref<string>('');
 
     interface NewUserProps {
-      id: number;
+      id: string;
       email: string;
       first_name: string;
       last_name: string;
@@ -161,7 +160,7 @@ export default defineComponent({
     }
 
     const newUser = ref<NewUserProps>({
-      id: uuidv4(),
+      id: '',
       email: '',
       first_name: '',
       last_name: '',
@@ -169,28 +168,53 @@ export default defineComponent({
     });
 
     const createANewUser = () => {
-      console.log(newUser.value);
+      const cleanFirstName = newUser.value.first_name
+        .trim()
+        .replace(/\s+/g, ' ');
+      const cleanLastName = newUser.value.last_name.trim().replace(/\s+/g, ' ');
 
-      users.value.push(newUser.value);
+      const newUserWithId = {
+        ...newUser.value,
+        id: uuidv4(),
+        first_name: cleanFirstName,
+        last_name: cleanLastName,
+      };
 
-      // authStore.createAUser();
+      users.value.push(newUserWithId);
+
+      const storedUsers = localStorage.getItem('users');
+      const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
+      localUsers.push(newUserWithId);
+      localStorage.setItem('users', JSON.stringify(localUsers));
+
+      fetchAllUsers();
     };
 
     const fetchUsers = async (page?: string) => {
+      const storedUsers = localStorage.getItem('users');
+      const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
+
       const response = await authStore.listOfUsers(page);
 
       if (response) {
-        users.value = response.data;
+        const apiUsers = response.data;
+        users.value = [...localUsers, ...apiUsers];
         totalPages.value = response.total_pages;
       }
 
-      if (response && searchQuery.value.trim() === '') {
+      if (searchQuery.value.trim() === '') {
         filteredUsers.value = [...users.value];
+        return;
       }
+      filterUsers();
     };
 
     const fetchAllUsers = async () => {
-      let allUsersTemp: User[] = [];
+      const storedUsers = localStorage.getItem('users');
+      const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
+
+      let allUsersTemp: User[] = [...localUsers];
+
       for (let i = 1; i <= totalPages.value!; i++) {
         const response = await authStore.listOfUsers(i.toString());
         if (response) {
@@ -198,21 +222,33 @@ export default defineComponent({
         }
       }
 
-      allUsers.value = allUsersTemp;
+      const uniqueUsers = Array.from(
+        new Map(allUsersTemp.map((user) => [user.id, user])).values(),
+      );
+
+      allUsers.value = uniqueUsers;
 
       filterUsers();
     };
 
     const filterUsers = () => {
-      if (searchQuery.value.trim() === '') {
+      const query = searchQuery.value.trim().toLowerCase();
+      console.log(`Filtering with query: "${query}"`);
+
+      if (query === '') {
         filteredUsers.value = [...users.value];
         return;
       }
-      filteredUsers.value = allUsers.value.filter((user) =>
-        `${user.first_name} ${user.last_name}`
+
+      filteredUsers.value = allUsers.value.filter((user) => {
+        const fullName = `${user.first_name} ${user.last_name}`
           .toLowerCase()
-          .includes(searchQuery.value.toLowerCase()),
-      );
+          .trim();
+        console.log(`Checking user: "${fullName}"`);
+        return fullName.includes(query);
+      });
+
+      console.log(`Filtered users:`, filteredUsers.value);
     };
 
     onMounted(async () => {
