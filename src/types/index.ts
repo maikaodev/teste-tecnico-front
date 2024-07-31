@@ -6,17 +6,19 @@ export interface User {
   avatar: string;
 }
 
-export interface UserResponse {
-  data: User[];
-  total: number;
+export interface ResponseProps {
   page: number;
   per_page: number;
+  total: number;
   total_pages: number;
+  data: User[];
 }
 
-export interface ChartSeries {
-  name: string;
-  data: number[];
+export interface FormattedUser {
+  id: number;
+  email: string;
+  full_name: string;
+  avatar: string;
 }
 
 export interface Color {
