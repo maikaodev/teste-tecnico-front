@@ -21,94 +21,28 @@
         <span
           class="text-lg font-bold text-font-secondary px-1 self-start self-center md:text-2xl truncate text-ellipsis overflow-hidden"
         >
-          {{ truncatedName(user.first_name, user.last_name) }}
+          {{ user.full_name }}
         </span>
 
         <span class="pt-4 text-font-secondary text-sm md:text-xl">
-          {{ truncatedEmail(user.email) }}
+          {{ user.email }}
         </span>
-
-        <!-- Dropdown Menu for Edit and Delete -->
-        <div class="absolute top-2 right-2">
-          <button
-            @click="openDropdown(user)"
-            class="relative flex items-center justify-center w-8 h-8 text-gray-700 hover:text-gray-900"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-6 h-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="1" />
-              <circle cx="5" cy="12" r="1" />
-              <circle cx="19" cy="12" r="1" />
-            </svg>
-            <!-- Dropdown menu -->
-            <div
-              v-if="dropdownUser === user"
-              class="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded"
-            >
-              <button
-                @click="editUser(user)"
-                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
-              >
-                Editar
-              </button>
-              <button
-                @click="confirmDeleteUser(user.id.toString())"
-                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
-              >
-                Deletar
-              </button>
-            </div>
-          </button>
-        </div>
       </div>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from 'vue';
-import { User } from '../types';
+import { defineComponent, PropType } from 'vue';
+import { FormattedUser } from '../types';
 
 export default defineComponent({
   name: 'Card',
   props: {
     data: {
-      type: Array as PropType<User[]>,
+      type: Array as PropType<FormattedUser[]>,
       required: true,
       default: () => [],
-    },
-  },
-  data() {
-    return {
-      dropdownUser: null as User | null,
-    };
-  },
-  methods: {
-    truncatedName(firstName: string, lastName: string): string {
-      const fullName = `${firstName} ${lastName}`;
-      return fullName.length > 26
-        ? fullName.substring(0, 20) + '...'
-        : fullName;
-    },
-    truncatedEmail(email: string): string {
-      return email.length > 25 ? email.substring(0, 25) + '...' : email;
-    },
-    openDropdown(user: User) {
-      this.dropdownUser = this.dropdownUser === user ? null : user;
-    },
-    editUser(user: User) {
-      this.$emit('edit-user', user);
-    },
-    confirmDeleteUser(userId: string) {
-      this.$emit('delete-user', userId);
     },
   },
 });

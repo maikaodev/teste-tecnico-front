@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col">
-    <section
+    <!-- <section
       class="px-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-4"
     >
       <v-container class="mx-0">
@@ -17,7 +17,7 @@
                 >
               </template>
 
-              <template v-slot:default="{ isActive }">
+              <template v-slot:default="{}">
                 <v-card class="w-[80vw] gap-4">
                   <v-toolbar
                     class="bg-back-primary text-font-primary"
@@ -97,28 +97,27 @@
           type="text"
         />
       </div>
-    </section>
+    </section> -->
 
     <section class="mb-4">
-      <Card :data="filteredUsers" />
+      <Card :data="users" />
 
-      <v-pagination
-        v-model="currentPage"
-        active-color="#7c8071"
-        :length="totalPages"
-      ></v-pagination>
+      <!-- TODO: Adicionar o v-model para controlar as requisicoes e param da page v-model="currentPage" -->
+      <v-pagination active-color="#7c8071" :length="totalPages"></v-pagination>
     </section>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch } from 'vue';
-import { useAuthStore } from '../stores/auth';
-import { useRouter, useRoute } from 'vue-router';
+import { defineComponent, ref, onMounted } from 'vue';
+
+import UserController from '../utils/userController';
+
 import Card from '../components/Card.vue';
-import { User } from '../types';
+
 import defaultImg from '../assets/default_img.jpg';
-import { v4 as uuidv4 } from 'uuid';
+
+import { FormattedUser } from '../types';
 
 export default defineComponent({
   name: 'Home',
@@ -130,214 +129,28 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const authStore = useAuthStore();
-    const users = ref<User[]>([]);
-    const filteredUsers = ref<User[]>([]);
-    const allUsers = ref<User[]>([]);
+    // const authStore = useAuthStore();
+    const users = ref<FormattedUser[]>([]); // const filteredUsers = ref<User[]>([]);
     const totalPages = ref<number | undefined>(0);
-    const currentPage = ref<number>(parseInt(props.page));
-    const router = useRouter();
-    const route = useRoute();
-    const searchQuery = ref<string>('');
-    const editDialog = ref<boolean>(false);
-    const currentUser = ref<User | null>(null);
+    // const allUsers = ref<User[]>([]);
+    // const currentPage = ref<number>(parseInt(props.page));
+    // const router = useRouter();
+    // const route = useRoute();
+    // const searchQuery = ref<string>('');
+    // const editDialog = ref<boolean>(false)
 
-    interface NewUserProps {
-      id: string;
-      email: string;
-      first_name: string;
-      last_name: string;
-      avatar: string;
-    }
-
-    const newUser = ref<NewUserProps>({
-      id: '',
-      email: '',
-      first_name: '',
-      last_name: '',
-      avatar: defaultImg,
-    });
-
-    const createANewUser = () => {
-      const cleanFirstName = newUser.value.first_name
-        .trim()
-        .replace(/\s+/g, ' ');
-      const cleanLastName = newUser.value.last_name.trim().replace(/\s+/g, ' ');
-
-      const newUserWithId = {
-        ...newUser.value,
-        id: uuidv4(),
-        first_name: cleanFirstName,
-        last_name: cleanLastName,
-      };
-
-      users.value.push(newUserWithId);
-
-      const storedUsers = localStorage.getItem('users');
-      const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
-      localUsers.push(newUserWithId);
-      localStorage.setItem('users', JSON.stringify(localUsers));
-
-      fetchAllUsers();
-    };
-
-    const fetchUsers = async (page?: string) => {
-      const storedUsers = localStorage.getItem('users');
-      const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
-
-      const response = await authStore.listOfUsers(page);
-
-      if (response) {
-        const apiUsers = response.data;
-        users.value = [...localUsers, ...apiUsers];
-        totalPages.value = response.total_pages;
-      }
-
-      if (searchQuery.value.trim() === '') {
-        filteredUsers.value = [...users.value];
-        return;
-      }
-      filterUsers();
-    };
-
-    const fetchAllUsers = async () => {
-      const storedUsers = localStorage.getItem('users');
-      const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
-
-      let allUsersTemp: User[] = [...localUsers];
-
-      for (let i = 1; i <= totalPages.value!; i++) {
-        const response = await authStore.listOfUsers(i.toString());
-        if (response) {
-          allUsersTemp = allUsersTemp.concat(response.data);
-        }
-      }
-
-      const uniqueUsers = Array.from(
-        new Map(allUsersTemp.map((user) => [user.id, user])).values(),
-      );
-
-      allUsers.value = uniqueUsers;
-
-      filterUsers();
-    };
-
-    const filterUsers = () => {
-      const query = searchQuery.value.trim().toLowerCase();
-      console.log(`Filtering with query: "${query}"`);
-
-      if (query === '') {
-        filteredUsers.value = [...users.value];
-        return;
-      }
-
-      filteredUsers.value = allUsers.value.filter((user) => {
-        const fullName = `${user.first_name} ${user.last_name}`
-          .toLowerCase()
-          .trim();
-        console.log(`Checking user: "${fullName}"`);
-        return fullName.includes(query);
-      });
-
-      console.log(`Filtered users:`, filteredUsers.value);
-    };
-
-    const saveUser = () => {
-      if (currentUser.value) {
-        const index = users.value.findIndex(
-          (user) => user.id === currentUser.value!.id,
-        );
-        if (index !== -1) {
-          users.value[index] = { ...currentUser.value };
-          const storedUsers = localStorage.getItem('users');
-          const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
-          const userIndex = localUsers.findIndex(
-            (user) => user.id === currentUser.value!.id,
-          );
-          if (userIndex !== -1) {
-            localUsers[userIndex] = { ...currentUser.value };
-            localStorage.setItem('users', JSON.stringify(localUsers));
-          }
-        }
-      }
-      editDialog.value = false;
-    };
-
-    const openEditDialog = (user: User) => {
-      currentUser.value = { ...user };
-      editDialog.value = true;
-    };
-
-    const confirmDeleteUser = (userId: string) => {
-      if (confirm('Are you sure you want to delete this user?')) {
-        deleteUser(userId);
-      }
-    };
-
-    const deleteUser = (userId: string) => {
-      users.value = users.value.filter((user) => user.id !== Number(userId));
-      const storedUsers = localStorage.getItem('users');
-      const localUsers = storedUsers ? JSON.parse(storedUsers) : [];
-      const updatedLocalUsers = localUsers.filter((user) => user.id !== userId);
-      localStorage.setItem('users', JSON.stringify(updatedLocalUsers));
-      fetchAllUsers();
-    };
+    const userControler = new UserController();
 
     onMounted(async () => {
-      let pageParam = route.query.page?.toString();
+      await userControler.fetchAllUsers();
 
-      if (isNaN(Number(pageParam))) {
-        pageParam = '1';
-      }
+      console.log(userControler.formattedListOfUSers);
 
-      if (Number(pageParam) > totalPages.value!) {
-        pageParam = '1';
-      }
-
-      if (pageParam) {
-        await fetchUsers(pageParam || currentPage.value.toString());
-        await fetchAllUsers();
-
-        currentPage.value = Number(pageParam);
-        return;
-      }
-
-      router.push({ query: { ...route.query, page: '1' } });
+      users.value = userControler.formattedListOfUSers;
+      totalPages.value = userControler.total_pages;
     });
 
-    watch(currentPage, async (newPage) => {
-      await fetchUsers(newPage.toString());
-      router.push({ query: { ...route.query, page: newPage.toString() } });
-    });
-
-    watch(
-      () => route.query.page,
-      (newPage) => {
-        if (newPage) {
-          currentPage.value = parseInt(newPage as string);
-        }
-      },
-    );
-
-    watch(searchQuery, filterUsers);
-
-    return {
-      users,
-      newUser,
-      filteredUsers,
-      allUsers,
-      authStore,
-      totalPages,
-      currentPage,
-      searchQuery,
-      createANewUser,
-      filterUsers,
-      editDialog,
-      currentUser,
-      saveUser,
-      openEditDialog,
-      confirmDeleteUser,
-    };
+    return { users, totalPages };
   },
 });
 </script>
