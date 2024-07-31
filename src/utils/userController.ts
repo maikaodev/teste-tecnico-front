@@ -7,10 +7,12 @@ import { v4 as uuidv4 } from 'uuid';
 class UserController {
   total_pages: number;
   formattedListOfUSers: FormattedUser[];
+  paginatedUsers: FormattedUser[][];
 
   constructor() {
     this.total_pages = 0;
     this.formattedListOfUSers = [];
+    this.paginatedUsers = [];
   }
 
   formatterUser(newUser: User): FormattedUser {
@@ -39,25 +41,26 @@ class UserController {
       let data: User[] = [];
 
       if (response.data.data.length > 0) {
-        this.total_pages = response.data.total_pages;
+        const total_pages = response.data.total_pages;
+
         data = response.data.data;
-      }
 
-      for (let page = 2; page <= this.total_pages; page++) {
-        const pageResponse = await axiosInstance.get<ResponseProps>(
-          `/users?page=${page}`,
-        );
-        if (pageResponse && pageResponse.data.data.length > 0) {
-          data.push(...pageResponse.data.data);
+        for (let page = 2; page <= total_pages; page++) {
+          const pageResponse = await axiosInstance.get<ResponseProps>(
+            `/users?page=${page}`,
+          );
+          if (pageResponse && pageResponse.data.data.length > 0) {
+            data.push(...pageResponse.data.data);
+          }
         }
-      }
 
-      for (const user of data) {
-        const formattedUser = this.formatterUser(user);
-        this.formattedListOfUSers.push(formattedUser);
-      }
+        for (const user of data) {
+          const formattedUser = this.formatterUser(user);
+          this.formattedListOfUSers.push(formattedUser);
+        }
 
-      this.saveThisInLocalStorage(this.formattedListOfUSers);
+        this.paginateArray(this.formattedListOfUSers);
+      }
     } catch (error: any) {
       console.error('Failed to fetch users:', error.message);
       return null;
@@ -110,6 +113,18 @@ class UserController {
     }
 
     return false;
+  }
+
+  paginateArray(array: FormattedUser[]) {
+    const paginatedArray: FormattedUser[][] = [];
+
+    for (let i = 0; i < array.length; i += 8) {
+      paginatedArray.push(array.slice(i, i + 8));
+    }
+
+    this.total_pages = paginatedArray.length;
+
+    this.paginatedUsers = paginatedArray;
   }
 }
 

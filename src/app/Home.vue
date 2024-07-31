@@ -103,13 +103,17 @@
       <Card :data="users" />
 
       <!-- TODO: Adicionar o v-model para controlar as requisicoes e param da page v-model="currentPage" -->
-      <v-pagination active-color="#7c8071" :length="totalPages"></v-pagination>
+      <v-pagination
+        v-model="currentPage"
+        active-color="#7c8071"
+        :length="totalPages"
+      ></v-pagination>
     </section>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, onMounted, watch } from 'vue';
 
 import UserController from '../utils/userController';
 
@@ -118,6 +122,7 @@ import Card from '../components/Card.vue';
 import defaultImg from '../assets/default_img.jpg';
 
 import { FormattedUser } from '../types';
+import { useRoute, useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'Home',
@@ -133,9 +138,9 @@ export default defineComponent({
     const users = ref<FormattedUser[]>([]); // const filteredUsers = ref<User[]>([]);
     const totalPages = ref<number | undefined>(0);
     // const allUsers = ref<User[]>([]);
-    // const currentPage = ref<number>(parseInt(props.page));
-    // const router = useRouter();
-    // const route = useRoute();
+    const currentPage = ref<number>(parseInt(props.page) || 0);
+    const router = useRouter();
+    const route = useRoute();
     // const searchQuery = ref<string>('');
     // const editDialog = ref<boolean>(false)
 
@@ -144,13 +149,34 @@ export default defineComponent({
     onMounted(async () => {
       await userControler.fetchAllUsers();
 
-      console.log(userControler.formattedListOfUSers);
+      users.value = userControler.paginatedUsers[currentPage.value];
 
-      users.value = userControler.formattedListOfUSers;
+      console.log('users.value (onMounted): ', userControler.paginatedUsers);
+
       totalPages.value = userControler.total_pages;
     });
 
-    return { users, totalPages };
+    watch(currentPage, async (newPage) => {
+      const index = newPage - 1;
+      users.value = userControler.paginatedUsers[index];
+
+      router.push({ query: { ...route.query, page: newPage.toString() } });
+    });
+
+    watch(
+      () => route.query.page,
+      (newPage) => {
+        if (newPage) {
+          currentPage.value = parseInt(newPage as string);
+        }
+      },
+    );
+
+    return { users, totalPages, currentPage };
+  },
+
+  methods: {
+    paginated() {},
   },
 });
 </script>
